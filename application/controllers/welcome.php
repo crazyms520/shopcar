@@ -1,7 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 class Welcome extends CI_Controller {
-
 	function __construct(){
 		parent::__construct();
 		$this->load->model('user');
@@ -20,7 +18,6 @@ class Welcome extends CI_Controller {
 			'user' => $user
 			));
 	}
-
 	public function login(){
 		$account = $this->input->post('account');
 		$password = $this->input->post('password');
@@ -40,7 +37,6 @@ class Welcome extends CI_Controller {
 			redirect('welcome');
 		}
 	}
-
 	public function register(){
 		$login = $this->session->userdata('login');
 		$navbar = $this->load->view('_navbar',array(
@@ -51,7 +47,6 @@ class Welcome extends CI_Controller {
 			'navbar' => $navbar
 			));
 	}
-
 	public function register_post(){
 		$account = $this->input->post('account');
 		$name = $this->input->post('name');
@@ -79,7 +74,6 @@ class Welcome extends CI_Controller {
 		}
 		$this->load->view('register');
 	}
-
 	public function logout(){
 		$this->session->unset_userdata('user_id');
 		$this->session->unset_userdata('login');

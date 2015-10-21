@@ -31,4 +31,5 @@
       $this->db->insert('users',$data);
       return $this->db->insert_id();
     }
+
   }
