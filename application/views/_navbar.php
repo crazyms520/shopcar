@@ -27,10 +27,10 @@
       <ul class="nav navbar-nav navbar-right">
         <?php if( ! $login ){ ?>
         <!-- <li><a href="#">Login</a></li> -->
-        <li><a href="#">Register</a></li>
+        <li><a href="<?php echo site_url('welcome/register');?>">Register</a></li>
         <?php }else{?>
 
-        <li><a href="#">Logout</a></li>
+        <li><a href="<?php echo site_url('welcome/logout');?>">Logout</a></li>
 
         <?php } ?>
       </ul>
