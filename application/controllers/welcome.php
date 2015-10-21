@@ -9,27 +9,23 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		$login = $this->session->userdata('login');
-		$user_id = $this->session->userdata('user_id');
-		$user = $this->user->get_user_by_id($user_id);
 		$navbar = $this->load->view('_navbar',array(
 			'page' => 'home',
 			'login' => $login
 			),true);
 		$this->load->view('welcome_message',array(
-			'navbar' => $navbar,
-			'user' => $user
+			'navbar' => $navbar
 			));
 	}
 
 	public function login(){
-		$account = $this->input->post('account');
+		$email = $this->input->post('email');
 		$password = $this->input->post('password');
-		$user = $this->user->get_user_by_acc_pas($account,$password);
-		if($account && $password){
+		$user = $this->user->get_user_by_mail_pas($email,$password);
+		if($email && $password){
 			if($user){
 				$this->session->set_userdata('user_id',$user->id);
 				$this->session->set_userdata('login','YES');
-				$this->session->set_flashdata('message','登入成功');
 				redirect('welcome');
 			}else{
 				$this->session->set_flashdata('message','登入失敗');
@@ -40,49 +36,7 @@ class Welcome extends CI_Controller {
 			redirect('welcome');
 		}
 	}
-
-	public function register(){
-		$login = $this->session->userdata('login');
-		$navbar = $this->load->view('_navbar',array(
-			'login' => $login,
-			'page' => ''
-			),true);
-		$this->load->view('register',array(
-			'navbar' => $navbar
-			));
-	}
-
-	public function register_post(){
-		$account = $this->input->post('account');
-		$name = $this->input->post('name');
-		$password = $this->input->post('password');
-		$repassword = $this->input->post('repassword');
-		$user = $this->user->get_user_by_acc_pas($account,$password);
-		if(!$user){
-			if($password == $repassword){
-				$id = $this->user->register(array(
-					'account' => $account,
-					'name' => $name,
-					'password' => $password
-					));
-			}else{
-				$this->session->set_flashdata('message','密碼確認錯誤');
-				redirect('welcome/register');
-			}
-		}else{
-			$this->session->set_flashdata('message','帳號重覆');
-			redirect('welcome/register');
-		}
-		if($id){
-			$this->session->set_flashdata('message','註冊成功快登入吧');
-			return redirect(site_url('welcome'));
-		}
-		$this->load->view('register');
-	}
-
-	public function logout(){
-		$this->session->unset_userdata('user_id');
-		$this->session->unset_userdata('login');
-		return redirect(site_url('welcome'));
-	}
 }
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */
