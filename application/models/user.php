@@ -32,4 +32,9 @@
       return $this->db->insert_id();
     }
 
+    public function get_all_books(){
+      return $this->db->get('books')
+                      ->result();
+
+    }
   }

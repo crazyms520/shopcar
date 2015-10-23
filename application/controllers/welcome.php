@@ -3,6 +3,7 @@ class Welcome extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->model('user');
+		$this->load->helper('cookie');
 	}
 	public function index()
 	{
@@ -78,5 +79,48 @@ class Welcome extends CI_Controller {
 		$this->session->unset_userdata('user_id');
 		$this->session->unset_userdata('login');
 		return redirect(site_url('welcome'));
+	}
+
+	public function shop(){
+		$login = $this->session->userdata('login');
+		$navbar = $this->load->view('_navbar',array(
+			'page' => 'shop',
+			'login' => $login
+			),true);
+		$books =  $this->user->get_all_books();
+		$this->load->view('shop',array(
+			'navbar' => $navbar,
+			'books' => $books
+			));
+	}
+
+	public function shop_post(){
+		$name = $this->input->post('book_name');
+		$quantity = $this->input->post('quantity');
+		$book_name = $this->input->cookie('book_name');
+		if(empty($book_name)){
+			$this->input->set_cookie('book_name',$name,86500);
+			$this->input->set_cookie('quantity',$quantity,86500);
+		}else{
+			$book_name_array = explode(",",$this->input->cookie('book_name'));
+			$book_quantity_array = explode(",",$quantity);
+			$book_name_array = $name;
+			$this->input->set_cookie('book_name_array',implode(",",$book_name_array));
+			$this->input->set_cookie('book_quantity_array',implode(",",$book_quantity_array));
+
+		}
+		if($name && $quantity){
+			$this->session->set_flashdata('message','已放入購物車');
+		}
+
+		return redirect(site_url('welcome/shop'));
+	}
+
+	public function shopcar(){
+		$book_name = $this->input->cookie('book_name_array');
+		echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+		var_dump ($book_name);
+		exit ();
+		$this->load->view('shopcar',$book);
 	}
 }

@@ -14,8 +14,8 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="<?php echo $page == 'shop' ? 'active' : '' ; ?>"><a href="#">Shop</a></li>
-        <li class="<?php echo $page == 'shopcar' ? 'active' : '' ; ?>"><a href="#">Shopcar</a></li>
+        <li class="<?php echo $page == 'shop' ? 'active' : '' ; ?>"><a href="<?php echo site_url('welcome/shop');?>">Shop</a></li>
+        <li class="<?php echo $page == 'shopcar' ? 'active' : '' ; ?>"><a href="<?php echo site_url('welcome/shopcar');?>">Shopcar</a></li>
       </ul>
       <!-- <form class="navbar-form navbar-left" role="search">
         <div class="form-group">

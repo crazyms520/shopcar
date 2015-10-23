@@ -22,6 +22,9 @@
 <body>
   <?php echo $navbar; ?>
   <div class='container'>
+    <?php if($message = $this->session->flashdata('message')){?>
+      <div class='alert alert-info'><?php echo $message; ?></div>
+    <?php } ?>
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4">
