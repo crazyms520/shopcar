@@ -95,32 +95,31 @@ class Welcome extends CI_Controller {
 	}
 
 	public function shop_post(){
-		$name = $this->input->post('book_name');
+		$name = $this->input->post('book_name').',';
 		$quantity = $this->input->post('quantity');
-		$book_name = $this->input->cookie('book_name');
-		if(empty($book_name)){
-			$this->input->set_cookie('book_name',$name,86500);
-			$this->input->set_cookie('quantity',$quantity,86500);
+		$book_name_list = $this->input->cookie('book_name_list');
+
+		if(empty($this->input->cookie('book_name_list'))){
+			$this->input->set_cookie('book_name_list',$name,3600);
+			$this->input->set_cookie('quantity_list',$quantity,3600);
 		}else{
-			$book_name_array = explode(",",$this->input->cookie('book_name'));
-			$book_quantity_array = explode(",",$quantity);
-			$book_name_array = $name;
-			$this->input->set_cookie('book_name_array',implode(",",$book_name_array));
-			$this->input->set_cookie('book_quantity_array',implode(",",$book_quantity_array));
+			$book_name_array = explode(',',$this->input->cookie('book_name_list'));
+			$book_name_array[]= $name ;
+			$this->input->set_cookie('book_name_list',implode(',',$book_name_array),3600);
 
 		}
+
 		if($name && $quantity){
 			$this->session->set_flashdata('message','已放入購物車');
 		}
-
 		return redirect(site_url('welcome/shop'));
+
 	}
 
 	public function shopcar(){
-		$book_name = $this->input->cookie('book_name_array');
-		echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-		var_dump ($book_name);
-		exit ();
-		$this->load->view('shopcar',$book);
+		$book = $this->input->cookie('book_name_list');
+		$this->load->view('shopcar',array(
+			'book' => $book
+			));
 	}
 }
