@@ -78,6 +78,9 @@ class Welcome extends CI_Controller {
 	public function logout(){
 		$this->session->unset_userdata('user_id');
 		$this->session->unset_userdata('login');
+		delete_cookie('book_name_list');
+		delete_cookie('book_price_list');
+		delete_cookie('book_quantity_list');
 		return redirect(site_url('welcome'));
 	}
 
@@ -96,20 +99,32 @@ class Welcome extends CI_Controller {
 
 	public function shop_post(){
 		$name = $this->input->post('book_name').',';
-		$quantity = $this->input->post('quantity');
+		$price = $this->input->post('book_price').',';
+		$quantity = $this->input->post('quantity').',';
 		$book_name_list = $this->input->cookie('book_name_list');
 
 		if(empty($this->input->cookie('book_name_list'))){
 			$this->input->set_cookie('book_name_list',$name,3600);
-			$this->input->set_cookie('quantity_list',$quantity,3600);
+			$this->input->set_cookie('book_price_list',$price,3600);
+			$this->input->set_cookie('book_quantity_list',$quantity,3600);
+
 		}else{
 			$book_name_array = explode(',',$this->input->cookie('book_name_list'));
 			$book_name_array[]= $name ;
 			$this->input->set_cookie('book_name_list',implode(',',$book_name_array),3600);
 
-		}
+			$book_price_array = explode(',',$this->input->cookie('book_price_list'));
+			$book_price_array[] = $price ;
+			$this->input->set_cookie('book_price_list',implode(',', $book_price_array),3600);
 
-		if($name && $quantity){
+			$book_quantity_array = explode(',', $this->input->cookie('book_quantity_list'));
+			$book_quantity_array[] = $quantity;
+			$this->input->set_cookie('book_quantity_list',implode(',', $book_quantity_array),3600);
+
+
+
+		}
+		if($name && $price && $quantity){
 			$this->session->set_flashdata('message','已放入購物車');
 		}
 		return redirect(site_url('welcome/shop'));
@@ -117,9 +132,20 @@ class Welcome extends CI_Controller {
 	}
 
 	public function shopcar(){
-		$book = $this->input->cookie('book_name_list');
+		$login = $this->session->userdata('login');
+		$books = explode(',',$this->input->cookie('book_name_list'));
+		$prices = explode(',', $this->input->cookie('book_price_list'));
+		$quantitys = explode(',', $this->input->cookie('book_quantity_list'));
+
+		$navbar = $this->load->view('_navbar',array(
+			'page' => 'shopcar',
+			'login' => $login
+			),true);
 		$this->load->view('shopcar',array(
-			'book' => $book
+			'books' => $books,
+			'prices' => $prices,
+			'quantitys' => $quantitys,
+			'navbar' => $navbar
 			));
 	}
 }

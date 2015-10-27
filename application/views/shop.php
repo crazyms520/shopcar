@@ -34,7 +34,9 @@
           <img src="<?php echo base_url('images/book.jpeg');?>" alt="book">
           <div class="caption">
             <h3><?php echo $book->name;?></h3>
+            <h4>建議售價：<?php echo $book->price ;?></h4>
               <input type='hidden' name='book_name' value="<?php echo $book->name;?>">
+              <input type='hidden' name='book_price' value="<?php echo $book->price;?>">
               <input type='text' name='quantity' value='1' placeholder='請輸入數量'>
               <button class="btn btn-default" role="button">放入購物車</button>
 
