@@ -22,18 +22,28 @@
 <body>
   <?php echo $navbar; ?>
   <div class='container'>
-    <?php $total = 0 ;?>
-    <table class="table table-striped">
-      <tr><td colspan='3' align="center">訂單明細</td></tr>
-      <tr><th>書名</th><th>數量</th><th>價格</th></tr>
-      <?php for ($i=0; $i < count($books); $i++) { ?>
-      <?php if($books[$i]){ ?>
-        <tr><td><?php echo $books[$i] ;?></td><td><?php echo $quantitys[$i] ;?></td><td><?php echo $prices[$i] ;?></td></tr>
-      <?php } $total += $prices[$i]; } ?>
-      <tr><th></th><th></th><th>小計</th></tr>
-      <tr><th></th><th></th><th><?php echo $total ;?></th></tr>
-    </table>
 
+    <?if($login === "YES"){?>
+      <?php if(implode(' ',$books)){ ?>
+      <?php $total = 0 ;?>
+        <table class="table table-striped">
+          <tr><td colspan='3' align="center">訂單明細</td></tr>
+          <tr><th>書名</th><th>數量</th><th>價格</th></tr>
+          <?php for ($i=0; $i < count($books); $i++) { ?>
+          <?php if($books[$i]){ ?>
+            <tr><td><?php echo $books[$i] ;?></td><td><?php echo $quantitys[$i] ;?></td><td><?php echo $prices[$i] ;?></td></tr>
+          <?php } $total += $prices[$i]; } ?>
+          <tr><th></th><th></th><th>小計</th></tr>
+          <tr><th></th><th></th><th><?php echo $total ;?></th></tr>
+        </table>
+
+
+      <?php }else{?>
+      <div class='alert alert-info'><?php echo '購物車目前沒有東西';?></div>
+      <?php } ?>
+    <?php }else{ ?>
+      <div class='alert alert-info'><?php echo '請先登入';?></div>
+    <?php } ?>
   </div>
 </body>
 </html>

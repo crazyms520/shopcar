@@ -37,4 +37,10 @@
                       ->result();
 
     }
+    public function get_books($per_page,$offset){
+      return $this->db->limit($per_page,$offset)
+                      ->get('books')
+                      ->result();
+
+    }
   }

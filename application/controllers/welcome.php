@@ -4,6 +4,8 @@ class Welcome extends CI_Controller {
 		parent::__construct();
 		$this->load->model('user');
 		$this->load->helper('cookie');
+		$this->load->library('pagination');
+
 	}
 	public function index()
 	{
@@ -84,68 +86,130 @@ class Welcome extends CI_Controller {
 		return redirect(site_url('welcome'));
 	}
 
-	public function shop(){
-		$login = $this->session->userdata('login');
+	public function shop($per_page=1){
+		$per_page = $this->input->get('per_page');
+
+		$config['base_url'] = 'http://crazyms.com/shopcar/index.php/welcome/shop?';
+
+		$config['total_rows'] = count($this->user->get_all_books());
+		$config['per_page'] = 6;
+		$config['use_page_numbers'] = true;
+		$config['page_query_string'] = true;
+
+
+		if($per_page){
+        $offset = ($per_page-1) * $config['per_page'];
+      }else{
+        $offset = 0;
+      }
+
+    $config['full_tag_open'] = '<ul class="pagination">';
+    $config['full_tag_close'] = '</ul>';
+
+    $config['first_link'] = '第一頁';
+    $config['first_tag_open'] = '<li>';
+    $config['first_tag_close'] = '</li>';
+
+    $config['prev_link'] = '上一頁';
+    $config['prev_tag_open'] = '<li>';
+    $config['prev_tag_close'] = '</li>';
+
+    $config['next_link'] = '下一頁';
+    $config['next_tag_open'] = '<li>';
+    $config['next_tag_close'] = '</li>';
+
+    $config['last_link'] = '最後頁';
+    $config['last_tag_open'] = '<li>';
+    $config['last_tag_close'] = '</li>';
+
+    $config['cur_tag_open'] = '<li class="active"><a href="#">';
+    $config['cur_tag_close'] = '</li>';
+
+    $config['num_tag_open'] = '<li>';
+    $config['num_tag_close'] = '</li>';
+    $this->pagination->initialize($config);
+
+    $books =  $this->user->get_books($config['per_page'],$offset);
+    $pagination =  $this->pagination->create_links();
+
+    $login = $this->session->userdata('login');
 		$navbar = $this->load->view('_navbar',array(
 			'page' => 'shop',
 			'login' => $login
 			),true);
-		$books =  $this->user->get_all_books();
 		$this->load->view('shop',array(
 			'navbar' => $navbar,
-			'books' => $books
+			'books' => $books,
+			'pagination' => $pagination
 			));
 	}
 
 	public function shop_post(){
-		$name = $this->input->post('book_name').',';
-		$price = $this->input->post('book_price').',';
-		$quantity = $this->input->post('quantity').',';
+		$login = $this->session->userdata('login');
+		$name = $this->input->post('book_name');
+		$quantity = $this->input->post('quantity');
+		$price = $this->input->post('book_price')*$quantity;
 		$book_name_list = $this->input->cookie('book_name_list');
 
-		if(empty($this->input->cookie('book_name_list'))){
-			$this->input->set_cookie('book_name_list',$name,3600);
-			$this->input->set_cookie('book_price_list',$price,3600);
-			$this->input->set_cookie('book_quantity_list',$quantity,3600);
 
+		if($login === 'YES'){
+			if(empty($this->input->cookie('book_name_list'))){
+				$this->input->set_cookie('book_name_list',$name,3600);
+				$this->input->set_cookie('book_price_list',$price,3600);
+				$this->input->set_cookie('book_quantity_list',$quantity,3600);
+				$this->session->set_flashdata('message','已放入購物車');
+				return redirect(site_url('welcome/shop'));
+
+			}else{
+				$book_name_array = explode(' ',$this->input->cookie('book_name_list'));
+				$book_name_array[]= $name ;
+				$this->input->set_cookie('book_name_list',implode(' ',$book_name_array),3600);
+
+				$book_price_array = explode(' ',$this->input->cookie('book_price_list'));
+				$book_price_array[] = $price ;
+				$this->input->set_cookie('book_price_list',implode(' ', $book_price_array),3600);
+
+				$book_quantity_array = explode(' ', $this->input->cookie('book_quantity_list'));
+				$book_quantity_array[] = $quantity;
+				$this->input->set_cookie('book_quantity_list',implode(' ', $book_quantity_array),3600);
+				$this->session->set_flashdata('message','已放入購物車');
+				return redirect(site_url('welcome/shop'));
+			}
 		}else{
-			$book_name_array = explode(',',$this->input->cookie('book_name_list'));
-			$book_name_array[]= $name ;
-			$this->input->set_cookie('book_name_list',implode(',',$book_name_array),3600);
-
-			$book_price_array = explode(',',$this->input->cookie('book_price_list'));
-			$book_price_array[] = $price ;
-			$this->input->set_cookie('book_price_list',implode(',', $book_price_array),3600);
-
-			$book_quantity_array = explode(',', $this->input->cookie('book_quantity_list'));
-			$book_quantity_array[] = $quantity;
-			$this->input->set_cookie('book_quantity_list',implode(',', $book_quantity_array),3600);
-
-
-
+			$this->session->set_flashdata('message','請先登入');
+			return redirect(site_url('welcome/shop'));
 		}
-		if($name && $price && $quantity){
-			$this->session->set_flashdata('message','已放入購物車');
-		}
-		return redirect(site_url('welcome/shop'));
-
 	}
 
 	public function shopcar(){
 		$login = $this->session->userdata('login');
-		$books = explode(',',$this->input->cookie('book_name_list'));
-		$prices = explode(',', $this->input->cookie('book_price_list'));
-		$quantitys = explode(',', $this->input->cookie('book_quantity_list'));
+		$books = explode(' ',$this->input->cookie('book_name_list'));
+		$prices = explode(' ', $this->input->cookie('book_price_list'));
+		$quantitys = explode(' ', $this->input->cookie('book_quantity_list'));
+		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+		// var_dump (implode(' ',$books));
+		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+		// var_dump (isset($books));
+		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+		// var_dump (empty($books));
+		// exit ();
 
 		$navbar = $this->load->view('_navbar',array(
 			'page' => 'shopcar',
 			'login' => $login
 			),true);
-		$this->load->view('shopcar',array(
-			'books' => $books,
-			'prices' => $prices,
-			'quantitys' => $quantitys,
-			'navbar' => $navbar
-			));
+		if($login === 'YES'){
+			$this->load->view('shopcar',array(
+				'books' => $books,
+				'prices' => $prices,
+				'quantitys' => $quantitys,
+				'navbar' => $navbar
+				));
+		}else{
+			$this->load->view('shopcar',array(
+				'navbar' => $navbar,
+				'login' => $login
+				));
+		}
 	}
 }

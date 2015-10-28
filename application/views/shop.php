@@ -47,6 +47,7 @@
     </div>
     </form>
     <?php } ?>
+    <?php echo $pagination;?>
   </div>
 </body>
 </html>
