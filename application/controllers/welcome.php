@@ -186,13 +186,6 @@ class Welcome extends CI_Controller {
 		$books = explode(' ',$this->input->cookie('book_name_list'));
 		$prices = explode(' ', $this->input->cookie('book_price_list'));
 		$quantitys = explode(' ', $this->input->cookie('book_quantity_list'));
-		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-		// var_dump (implode(' ',$books));
-		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-		// var_dump (isset($books));
-		// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-		// var_dump (empty($books));
-		// exit ();
 
 		$navbar = $this->load->view('_navbar',array(
 			'page' => 'shopcar',
